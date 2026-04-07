@@ -1,6 +1,6 @@
 # World Bank Funded DEMs - Procurement Dashboard
 
-Interactive dashboard for exploring World Bank-funded Digital Elevation Model (DEM) procurement metadata. Part of the GFDRR "DEM for Resilience" initiative.
+Interactive dashboard for exploring World Bank-funded Digital Elevation Model (DEM) procurement metadata. Part of the GFDRR "DEM for Resilience" project.
 
 ## Overview
 
