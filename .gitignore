@@ -1,0 +1,10 @@
+.DS_Store
+__pycache__/
+*.pyc
+.env
+
+# Internal project management (not for public repo)
+AGENTS.md
+CLAUDE.md
+PROJECT_NOTES.md
+PRD.md
