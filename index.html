@@ -12,6 +12,9 @@
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
 
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.6/dist/chart.umd.min.js"></script>
+
   <script>
     tailwind.config = {
       theme: {
@@ -65,25 +68,28 @@
     #data-table th.sorted .sort-arrow { opacity: 1; }
     #data-table tbody tr:hover { background: #f0f7ff; }
 
-    /* Stat cards */
+    /* Stat cards — compact inline */
     .stat-card {
-      background: white;
-      border-radius: 8px;
-      padding: 12px 16px;
-      border: 1px solid #e5e7eb;
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+      padding: 4px 10px;
+      border-right: 1px solid #e5e7eb;
     }
+    .stat-card:last-child { border-right: 0; }
     .stat-card .stat-value {
-      font-size: 1.75rem;
+      font-size: 1.1rem;
       font-weight: 700;
-      line-height: 1.1;
+      line-height: 1;
       color: #002244;
+      white-space: nowrap;
     }
     .stat-card .stat-label {
-      font-size: 0.75rem;
+      font-size: 0.68rem;
       text-transform: uppercase;
-      letter-spacing: 0.05em;
+      letter-spacing: 0.04em;
       color: #6b7280;
-      margin-top: 2px;
+      white-space: nowrap;
     }
 
     /* Active filter badge */
@@ -93,57 +99,103 @@
       border-color: #002244 !important;
     }
 
+    /* Disabled options in fixed dropdowns (type/cost/bere) */
+    select option:disabled { color: #cbd5e1; }
+
     /* Scrollbar */
     .table-wrap::-webkit-scrollbar { width: 6px; height: 6px; }
     .table-wrap::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
 
-    /* Tabs */
-    .tab-btn { transition: all 0.15s; }
-    .tab-btn.active {
-      color: #002244;
-      border-bottom-color: #002244;
-      font-weight: 600;
+    /* Tabs — prominent button pills */
+    .tab-btn {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 14px;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      background: #ffffff;
+      color: #475569;
+      font-size: 0.875rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.15s;
     }
+    .tab-btn:hover {
+      background: #f0f7ff;
+      border-color: #0071BC;
+      color: #002244;
+    }
+    .tab-btn.active {
+      background: #002244;
+      border-color: #002244;
+      color: #ffffff;
+      font-weight: 600;
+      box-shadow: 0 1px 3px rgba(0, 34, 68, 0.25);
+    }
+    .tab-btn .tab-icon {
+      width: 16px;
+      height: 16px;
+      stroke-width: 2;
+    }
+    .tab-btn.active .tab-icon { stroke: #ffffff; }
   </style>
 </head>
 <body class="bg-gray-50 text-gray-800">
 
   <!-- Header -->
   <header class="bg-wb-blue text-white">
-    <div class="max-w-[1400px] mx-auto px-4 py-4 flex items-center justify-between">
+    <div class="max-w-[1400px] mx-auto px-4 py-2.5 flex items-center justify-between">
       <div>
-        <h1 class="text-xl font-bold tracking-tight">World Bank Funded DEMs</h1>
-        <p class="text-sm text-blue-200 mt-0.5">Digital Elevation Model Procurement Dashboard</p>
+        <h1 class="text-lg font-bold tracking-tight leading-tight">World Bank Funded DEMs</h1>
+        <p class="text-xs text-blue-200">Digital Elevation Model Procurement Dashboard</p>
       </div>
-      <div class="text-right text-xs text-blue-300">
+      <div class="text-right text-[11px] text-blue-300 leading-tight">
         <div>GFDRR / World Bank</div>
         <div>DEM for Resilience Project</div>
       </div>
     </div>
   </header>
 
-  <!-- Stats bar -->
+  <!-- Stats bar (compact, inline) -->
   <div class="bg-white border-b">
-    <div class="max-w-[1400px] mx-auto px-4 py-3">
-      <div id="stats-bar" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3">
+    <div class="max-w-[1400px] mx-auto px-4 py-2">
+      <div id="stats-bar" class="flex flex-wrap items-center">
         <!-- Filled by JS -->
       </div>
     </div>
   </div>
 
   <!-- Main content -->
-  <div class="max-w-[1400px] mx-auto px-4 py-4">
+  <div class="max-w-[1400px] mx-auto px-4 py-3">
 
-    <!-- Filters -->
-    <div class="bg-white rounded-lg border p-3 mb-4">
-      <div class="flex flex-wrap items-center gap-3">
-        <label class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Filters</label>
+    <!-- Combined view switcher + filters -->
+    <div class="bg-white rounded-lg border p-2 mb-3">
+      <div class="flex flex-wrap items-center gap-2">
+        <!-- View switcher (left) -->
+        <div class="flex items-center gap-1.5 shrink-0 pr-2 border-r border-gray-200">
+          <button class="tab-btn active" data-tab="map">
+            <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 22s-8-7.58-8-13a8 8 0 1 1 16 0c0 5.42-8 13-8 13z"/><circle cx="12" cy="9" r="2.5"/></svg>
+            <span>Map</span>
+          </button>
+          <button class="tab-btn" data-tab="charts">
+            <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>
+            <span>Charts</span>
+          </button>
+          <button class="tab-btn" data-tab="table">
+            <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M3 15h18M9 4v16"/></svg>
+            <span>Table</span>
+          </button>
+        </div>
 
-        <select id="filter-country" class="text-sm border rounded px-2 py-1.5 bg-white">
+        <!-- Filters (right) -->
+        <label class="text-[11px] font-semibold text-gray-500 uppercase tracking-wide shrink-0">Filter</label>
+
+        <select id="filter-country" class="text-sm border rounded px-2 py-1.5 bg-white shrink-0" style="width: 150px;">
           <option value="">All Countries</option>
         </select>
 
-        <select id="filter-type" class="text-sm border rounded px-2 py-1.5 bg-white">
+        <select id="filter-type" class="text-sm border rounded px-2 py-1.5 bg-white shrink-0" style="width: 110px;">
           <option value="">All Types</option>
           <option value="LiDAR">LiDAR</option>
           <option value="Satellite">Satellite</option>
@@ -151,11 +203,17 @@
           <option value="Unknown">Unknown</option>
         </select>
 
-        <select id="filter-vendor" class="text-sm border rounded px-2 py-1.5 bg-white">
+        <select id="filter-vendor" class="text-sm border rounded px-2 py-1.5 bg-white shrink-0" style="width: 150px;">
           <option value="">All Vendors</option>
         </select>
 
-        <select id="filter-cost" class="text-sm border rounded px-2 py-1.5 bg-white">
+        <select id="filter-bere" class="text-sm border rounded px-2 py-1.5 bg-white shrink-0" style="width: 160px;" title="Bank Executed vs Recipient Executed">
+          <option value="">BE / RE (all)</option>
+          <option value="BE">BE - Bank Executed</option>
+          <option value="RE">RE - Recipient Executed</option>
+        </select>
+
+        <select id="filter-cost" class="text-sm border rounded px-2 py-1.5 bg-white shrink-0" style="width: 150px;">
           <option value="">All Cost Brackets</option>
           <option value="< $10,000">&lt; $10,000</option>
           <option value="$10,000 - $50,000">$10,000 - $50,000</option>
@@ -166,28 +224,15 @@
           <option value="Unknown">Unknown</option>
         </select>
 
-        <select id="filter-year" class="text-sm border rounded px-2 py-1.5 bg-white">
+        <select id="filter-year" class="text-sm border rounded px-2 py-1.5 bg-white shrink-0" style="width: 95px;">
           <option value="">All Years</option>
         </select>
 
-        <input id="filter-search" type="text" placeholder="Search..."
-          class="text-sm border rounded px-2 py-1.5 flex-1 min-w-[150px]">
-
         <button id="btn-clear-filters"
-          class="text-xs text-gray-500 hover:text-red-600 underline hidden">
-          Clear filters
+          class="text-xs text-gray-500 hover:text-red-600 underline hidden shrink-0">
+          Clear
         </button>
       </div>
-    </div>
-
-    <!-- Tab navigation -->
-    <div class="flex border-b mb-4 gap-1">
-      <button class="tab-btn active px-4 py-2 text-sm border-b-2 border-transparent" data-tab="map">
-        Map View
-      </button>
-      <button class="tab-btn px-4 py-2 text-sm border-b-2 border-transparent text-gray-500" data-tab="table">
-        Table View
-      </button>
     </div>
 
     <!-- Map tab -->
@@ -197,6 +242,48 @@
       </div>
       <p class="text-xs text-gray-400 mt-1">
         Circle size indicates number of procurements. Click a marker for details.
+      </p>
+    </div>
+
+    <!-- Charts tab -->
+    <div id="tab-charts" class="tab-content hidden">
+      <div class="bg-white rounded-lg border p-4 mb-4">
+        <h3 class="text-sm font-semibold text-gray-700 mb-1">Trend and Projection</h3>
+        <p class="text-xs text-gray-400 mb-3">
+          Annual procurement count (confirmed) with linear trend and 15% CAGR projection for 2026-2028.
+          Projection assumes continued demand growth consistent with the 2016-2024 trajectory.
+        </p>
+        <div style="height: 300px;"><canvas id="chart-trend"></canvas></div>
+      </div>
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <div class="bg-white rounded-lg border p-4">
+          <h3 class="text-sm font-semibold text-gray-700 mb-1">Procurements by Year</h3>
+          <p class="text-xs text-gray-400 mb-3">Stacked by sensor type</p>
+          <div style="height: 260px;"><canvas id="chart-year"></canvas></div>
+        </div>
+        <div class="bg-white rounded-lg border p-4">
+          <h3 class="text-sm font-semibold text-gray-700 mb-1">Sensor Type Mix</h3>
+          <p class="text-xs text-gray-400 mb-3">Share of procurements by type</p>
+          <div style="height: 260px;"><canvas id="chart-type"></canvas></div>
+        </div>
+        <div class="bg-white rounded-lg border p-4">
+          <h3 class="text-sm font-semibold text-gray-700 mb-1">BE / RE Split</h3>
+          <p class="text-xs text-gray-400 mb-3">Bank Executed vs Recipient Executed</p>
+          <div style="height: 260px;"><canvas id="chart-bere"></canvas></div>
+        </div>
+        <div class="bg-white rounded-lg border p-4">
+          <h3 class="text-sm font-semibold text-gray-700 mb-1">Top Vendors</h3>
+          <p class="text-xs text-gray-400 mb-3">Up to 10 most frequent suppliers</p>
+          <div style="height: 260px;"><canvas id="chart-vendor"></canvas></div>
+        </div>
+        <div class="bg-white rounded-lg border p-4 lg:col-span-2">
+          <h3 class="text-sm font-semibold text-gray-700 mb-1">Cost Bracket Distribution</h3>
+          <p class="text-xs text-gray-400 mb-3">Exact costs are redacted; brackets only</p>
+          <div style="height: 240px;"><canvas id="chart-cost"></canvas></div>
+        </div>
+      </div>
+      <p class="text-xs text-gray-400 mt-2">
+        Charts reflect the current filter selection.
       </p>
     </div>
 
@@ -218,6 +305,9 @@
                 </th>
                 <th class="text-left px-3 py-2 font-semibold text-gray-600" data-key="type">
                   Type <span class="sort-arrow">&#x25B4;</span>
+                </th>
+                <th class="text-left px-3 py-2 font-semibold text-gray-600" data-key="be_re" title="Bank Executed vs Recipient Executed">
+                  BE/RE <span class="sort-arrow">&#x25B4;</span>
                 </th>
                 <th class="text-left px-3 py-2 font-semibold text-gray-600" data-key="vendor">
                   Vendor <span class="sort-arrow">&#x25B4;</span>
@@ -243,13 +333,15 @@
   </div>
 
   <!-- Footer -->
-  <footer class="border-t mt-8 py-4 text-center text-xs text-gray-400">
-    <p>
+  <footer class="border-t mt-8 py-5 text-center text-xs text-gray-500">
+    <p class="font-medium text-gray-600">
       Global Facility for Disaster Reduction and Recovery (GFDRR) - World Bank Group
     </p>
     <p class="mt-1">
-      Part of the <em>DEM for Resilience</em> project.
-      Data reflects validated procurement records through 2025.
+      Part of the <em>DEM for Resilience</em> project. Data reflects validated procurement records through 2025.
+    </p>
+    <p class="mt-2 text-gray-400">
+      Funded by the <strong>Japan-GFDRR Trust Fund (Phase 2)</strong>, with support from the Japan-World Bank DRM Hub.
     </p>
   </footer>
 
@@ -282,65 +374,129 @@ async function init() {
   allData = await dataRes.json();
   countriesGeo = await geoRes.json();
 
-  populateFilterDropdowns();
   applyFilters();
   initMap();
   bindEvents();
 }
 
 // ---------------------------------------------------------------------------
-// Filters
+// Filters (faceted — each dropdown reflects what's reachable given the others)
 // ---------------------------------------------------------------------------
-function populateFilterDropdowns() {
-  const countries = [...new Set(allData.map(d => d.country).filter(Boolean))].sort();
-  const vendors = [...new Set(allData.map(d => d.vendor).filter(Boolean))].sort();
-  const years = [...new Set(allData.map(d => d.year).filter(Boolean))].sort();
+const FILTER_IDS = ['filter-country', 'filter-type', 'filter-vendor', 'filter-bere', 'filter-cost', 'filter-year'];
 
-  fillSelect('filter-country', countries);
-  fillSelect('filter-vendor', vendors);
-  fillSelect('filter-year', years);
+function currentFilterValues() {
+  return {
+    country: document.getElementById('filter-country').value,
+    type:    document.getElementById('filter-type').value,
+    vendor:  document.getElementById('filter-vendor').value,
+    bere:    document.getElementById('filter-bere').value,
+    cost:    document.getElementById('filter-cost').value,
+    year:    document.getElementById('filter-year').value,
+  };
 }
 
-function fillSelect(id, values) {
+function matchesFilters(d, f) {
+  if (f.country && d.country !== f.country) return false;
+  if (f.type && d.type !== f.type) return false;
+  if (f.vendor && d.vendor !== f.vendor) return false;
+  if (f.cost && d.cost_bracket !== f.cost) return false;
+  if (f.year && d.year !== f.year) return false;
+  if (f.bere) {
+    const v = (d.be_re || '').toUpperCase();
+    if (f.bere === 'BE' && !v.startsWith('BE')) return false;
+    if (f.bere === 'RE' && v !== 'RE') return false;
+  }
+  return true;
+}
+
+// Records that match every filter except the given one (used to compute that dropdown's valid options).
+function dataExcluding(filterKey, f) {
+  const g = { ...f };
+  g[filterKey] = '';
+  return allData.filter(d => matchesFilters(d, g));
+}
+
+function bereBucket(d) {
+  const v = (d.be_re || '').toUpperCase();
+  if (v.startsWith('BE')) return 'BE';
+  if (v === 'RE') return 'RE';
+  return null;
+}
+
+function updateFilterOptions() {
+  const f = currentFilterValues();
+
+  const countries = new Set(dataExcluding('country', f).map(d => d.country).filter(Boolean));
+  const vendors   = new Set(dataExcluding('vendor',  f).map(d => d.vendor).filter(Boolean));
+  const years     = new Set(dataExcluding('year',    f).map(d => d.year).filter(Boolean));
+  const types     = new Set(dataExcluding('type',    f).map(d => d.type).filter(Boolean));
+  const costs     = new Set(dataExcluding('cost',    f).map(d => d.cost_bracket).filter(Boolean));
+  const beres     = new Set(dataExcluding('bere',    f).map(bereBucket).filter(Boolean));
+
+  refillDynamicSelect('filter-country', 'All Countries', countries, f.country);
+  refillDynamicSelect('filter-vendor',  'All Vendors',   vendors,   f.vendor);
+  refillDynamicSelect('filter-year',    'All Years',     years,     f.year, { sortNumericFirst: true });
+  disableFixedOptions('filter-type', types);
+  disableFixedOptions('filter-cost', costs);
+  disableFixedOptions('filter-bere', beres);
+}
+
+function refillDynamicSelect(id, placeholder, availableSet, selected, opts = {}) {
   const sel = document.getElementById(id);
-  const first = sel.options[0];
+  let values = [...availableSet];
+  if (opts.sortNumericFirst) {
+    values.sort((a, b) => {
+      const na = parseInt(a), nb = parseInt(b);
+      if (!isNaN(na) && !isNaN(nb) && na !== nb) return na - nb;
+      return String(a).localeCompare(String(b));
+    });
+  } else {
+    values.sort((a, b) => String(a).localeCompare(String(b)));
+  }
+
   sel.innerHTML = '';
-  sel.appendChild(first);
-  values.forEach(v => {
+  const allOpt = document.createElement('option');
+  allOpt.value = '';
+  allOpt.textContent = placeholder;
+  sel.appendChild(allOpt);
+
+  // Preserve stale selection (no longer reachable) so the user doesn't silently lose it.
+  if (selected && !availableSet.has(selected)) {
+    const orphan = document.createElement('option');
+    orphan.value = selected;
+    orphan.textContent = `${selected} (no matches)`;
+    sel.appendChild(orphan);
+  }
+
+  for (const v of values) {
     const opt = document.createElement('option');
     opt.value = v;
     opt.textContent = v;
     sel.appendChild(opt);
-  });
+  }
+  sel.value = selected || '';
+}
+
+function disableFixedOptions(id, availableSet) {
+  const sel = document.getElementById(id);
+  for (const opt of sel.options) {
+    if (!opt.value) { opt.disabled = false; continue; }
+    opt.disabled = !availableSet.has(opt.value);
+  }
 }
 
 function applyFilters() {
-  const country = document.getElementById('filter-country').value;
-  const type = document.getElementById('filter-type').value;
-  const vendor = document.getElementById('filter-vendor').value;
-  const cost = document.getElementById('filter-cost').value;
-  const year = document.getElementById('filter-year').value;
-  const search = document.getElementById('filter-search').value.toLowerCase().trim();
+  const f = currentFilterValues();
 
-  filteredData = allData.filter(d => {
-    if (country && d.country !== country) return false;
-    if (type && d.type !== type) return false;
-    if (vendor && d.vendor !== vendor) return false;
-    if (cost && d.cost_bracket !== cost) return false;
-    if (year && d.year !== year) return false;
-    if (search) {
-      const haystack = [d.name, d.country, d.vendor, d.product, d.ttl, d.pcode, d.consultant]
-        .join(' ').toLowerCase();
-      if (!haystack.includes(search)) return false;
-    }
-    return true;
-  });
+  filteredData = allData.filter(d => matchesFilters(d, f));
 
-  const hasFilter = country || type || vendor || cost || year || search;
+  const hasFilter = Object.values(f).some(v => v);
   document.getElementById('btn-clear-filters').classList.toggle('hidden', !hasFilter);
 
+  updateFilterOptions();
   renderStats();
   renderTable();
+  renderCharts();
   updateMapMarkers();
 }
 
@@ -363,30 +519,37 @@ function renderStats() {
 
   const availCount = data.filter(d => d.available && d.available.toLowerCase() !== '' && d.available !== 'No').length;
 
+  const beCount = data.filter(d => (d.be_re || '').toUpperCase().startsWith('BE')).length;
+  const reCount = data.filter(d => (d.be_re || '').toUpperCase() === 'RE').length;
+  const bereSummary = `
+    <span class="inline-block px-1.5 py-0.5 rounded text-[10px] font-semibold bg-wb-blue text-white">BE ${beCount}</span>
+    <span class="inline-block px-1.5 py-0.5 rounded text-[10px] font-semibold bg-wb-sky text-white">RE ${reCount}</span>
+  `;
+
   const html = `
     <div class="stat-card">
-      <div class="stat-value">${data.length}</div>
-      <div class="stat-label">Datasets</div>
+      <span class="stat-value">${data.length}</span>
+      <span class="stat-label">Datasets</span>
     </div>
     <div class="stat-card">
-      <div class="stat-value">${countries.size}</div>
-      <div class="stat-label">Countries</div>
+      <span class="stat-value">${countries.size}</span>
+      <span class="stat-label">Countries</span>
     </div>
     <div class="stat-card">
-      <div class="stat-value">${yearRange}</div>
-      <div class="stat-label">Year Range</div>
+      <span class="stat-value">${yearRange}</span>
+      <span class="stat-label">Years</span>
     </div>
     <div class="stat-card">
-      <div class="stat-value text-base mt-1">${typeSummary}</div>
-      <div class="stat-label">By Type</div>
+      <span class="stat-label">Type</span>
+      <span class="stat-value">${typeSummary}</span>
     </div>
     <div class="stat-card">
-      <div class="stat-value">${availCount}</div>
-      <div class="stat-label">Available</div>
+      <span class="stat-label">BE / RE</span>
+      <span class="stat-value">${bereSummary}</span>
     </div>
     <div class="stat-card">
-      <div class="stat-value">${data.filter(d => d.cost_bracket !== 'Unknown').length}</div>
-      <div class="stat-label">With Cost Data</div>
+      <span class="stat-value">${availCount}</span>
+      <span class="stat-label">Available</span>
     </div>
   `;
   document.getElementById('stats-bar').innerHTML = html;
@@ -398,7 +561,7 @@ function renderStats() {
 function renderTable() {
   const tbody = document.getElementById('table-body');
   if (!filteredData.length) {
-    tbody.innerHTML = '<tr><td colspan="8" class="px-3 py-8 text-center text-gray-400">No matching records</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="9" class="px-3 py-8 text-center text-gray-400">No matching records</td></tr>';
     document.getElementById('table-count').textContent = '0 records';
     return;
   }
@@ -420,11 +583,18 @@ function renderTable() {
     const pcodeLink = d.pcode
       ? `<a href="https://projects.worldbank.org/en/projects-operations/project-detail/${d.pcode}" target="_blank" rel="noopener" class="text-blue-600 hover:underline">${d.pcode}</a>`
       : '-';
+    const bereVal = (d.be_re || '').toUpperCase();
+    const bereBadge = bereVal.startsWith('BE')
+      ? `<span class="px-1.5 py-0.5 rounded text-[10px] font-semibold bg-wb-blue text-white" title="Bank Executed">${escHtml(d.be_re)}</span>`
+      : bereVal === 'RE'
+        ? `<span class="px-1.5 py-0.5 rounded text-[10px] font-semibold bg-wb-sky text-white" title="Recipient Executed">RE</span>`
+        : '<span class="text-gray-300">-</span>';
     return `<tr class="border-t border-gray-100">
       <td class="px-3 py-2 max-w-[200px] truncate" title="${escHtml(d.name)}">${escHtml(d.name)}</td>
       <td class="px-3 py-2">${escHtml(d.year)}</td>
       <td class="px-3 py-2">${escHtml(d.country)}</td>
       <td class="px-3 py-2"><span class="px-1.5 py-0.5 rounded text-xs font-medium ${typeClass}">${d.type}</span></td>
+      <td class="px-3 py-2">${bereBadge}</td>
       <td class="px-3 py-2 max-w-[150px] truncate" title="${escHtml(d.vendor)}">${escHtml(d.vendor)}</td>
       <td class="px-3 py-2">${escHtml(d.resolution_m || '-')}</td>
       <td class="px-3 py-2 text-xs">${escHtml(d.cost_bracket)}</td>
@@ -438,6 +608,307 @@ function renderTable() {
 function escHtml(s) {
   if (!s) return '';
   return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ---------------------------------------------------------------------------
+// Charts
+// ---------------------------------------------------------------------------
+const charts = {};
+
+const COST_BRACKET_ORDER = [
+  '< $10,000',
+  '$10,000 - $50,000',
+  '$50,000 - $100,000',
+  '$100,000 - $500,000',
+  '$500,000 - $1,000,000',
+  '> $1,000,000',
+  'Unknown',
+];
+
+function yearKey(y) {
+  if (!y) return null;
+  const m = String(y).match(/\d{4}/);
+  return m ? m[0] : null;
+}
+
+function destroyChart(key) {
+  if (charts[key]) {
+    charts[key].destroy();
+    charts[key] = null;
+  }
+}
+
+function renderCharts() {
+  if (typeof Chart === 'undefined') return;
+  // Skip while the charts tab is hidden — Chart.js needs a sized canvas.
+  const chartsTab = document.getElementById('tab-charts');
+  if (chartsTab && chartsTab.classList.contains('hidden')) return;
+
+  Chart.defaults.animation = false;
+
+  const data = filteredData;
+  const typeOrder = ['LiDAR', 'Satellite', 'Drone', 'Unknown'];
+
+  // --- Trend + Projection (count per year) ---
+  // Only include explicit 4-digit years in the confirmed series.
+  const yearCounts = {};
+  data.forEach(d => {
+    const y = yearKey(d.year);
+    if (!y) return;
+    yearCounts[y] = (yearCounts[y] || 0) + 1;
+  });
+
+  const confirmedYears = Object.keys(yearCounts).map(Number).sort((a, b) => a - b);
+  const firstYear = confirmedYears.length ? confirmedYears[0] : 2011;
+  const lastConfirmed = confirmedYears.length ? confirmedYears[confirmedYears.length - 1] : 2025;
+  const projYears = [2026, 2027, 2028].filter(y => y > lastConfirmed);
+
+  const allYears = [];
+  for (let y = firstYear; y <= Math.max(lastConfirmed, ...projYears, lastConfirmed); y++) {
+    allYears.push(y);
+  }
+  for (const py of projYears) if (!allYears.includes(py)) allYears.push(py);
+
+  // Linear trend on confirmed-year counts (least squares, zero-filled for gap years)
+  const trendXs = [];
+  const trendYs = [];
+  for (let y = firstYear; y <= lastConfirmed; y++) {
+    trendXs.push(y);
+    trendYs.push(yearCounts[y] || 0);
+  }
+  let slope = 0, intercept = trendYs[0] || 0;
+  if (trendXs.length > 1) {
+    const n = trendXs.length;
+    const meanX = trendXs.reduce((a, b) => a + b, 0) / n;
+    const meanY = trendYs.reduce((a, b) => a + b, 0) / n;
+    let num = 0, den = 0;
+    for (let i = 0; i < n; i++) {
+      num += (trendXs[i] - meanX) * (trendYs[i] - meanY);
+      den += (trendXs[i] - meanX) ** 2;
+    }
+    slope = den ? num / den : 0;
+    intercept = meanY - slope * meanX;
+  }
+  const trendSeries = allYears.map(y => +(slope * y + intercept).toFixed(2));
+
+  // Confirmed bar series (null for projection years so they're not drawn)
+  const confirmedSeries = allYears.map(y => y <= lastConfirmed ? (yearCounts[y] || 0) : null);
+
+  // Projection: 15% CAGR from last 3 confirmed years' mean
+  const last3 = confirmedYears.slice(-3).map(y => yearCounts[y] || 0);
+  const base = last3.length ? last3.reduce((a, b) => a + b, 0) / last3.length : 0;
+  const projectedSeries = allYears.map(y => {
+    if (y <= lastConfirmed) return null;
+    const stepsFromBase = y - lastConfirmed;
+    return +(base * Math.pow(1.15, stepsFromBase)).toFixed(1);
+  });
+
+  destroyChart('trend');
+  charts.trend = new Chart(document.getElementById('chart-trend'), {
+    data: {
+      labels: allYears,
+      datasets: [
+        {
+          type: 'bar',
+          label: 'Confirmed procurements',
+          data: confirmedSeries,
+          backgroundColor: '#002244',
+          borderWidth: 0,
+          order: 2,
+        },
+        {
+          type: 'bar',
+          label: 'Projected (15% CAGR)',
+          data: projectedSeries,
+          backgroundColor: '#f59e0b',
+          borderWidth: 0,
+          order: 2,
+        },
+        {
+          type: 'line',
+          label: `Linear trend (${slope >= 0 ? '+' : ''}${slope.toFixed(1)}/yr)`,
+          data: trendSeries,
+          borderColor: '#dc2626',
+          borderDash: [6, 4],
+          borderWidth: 2,
+          pointRadius: 0,
+          fill: false,
+          tension: 0,
+          order: 1,
+        },
+      ],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 11 } } },
+        tooltip: { mode: 'index', intersect: false },
+      },
+      scales: {
+        x: { grid: { display: false }, ticks: { font: { size: 10 } } },
+        y: { beginAtZero: true, ticks: { precision: 0, font: { size: 10 } }, grid: { color: '#f1f5f9' } },
+      },
+    },
+  });
+
+  // --- Year x Type stacked bar ---
+  const years = [...new Set(data.map(d => yearKey(d.year)).filter(Boolean))].sort();
+  const yearStacks = {};
+  typeOrder.forEach(t => { yearStacks[t] = years.map(() => 0); });
+  data.forEach(d => {
+    const y = yearKey(d.year);
+    if (!y) return;
+    const idx = years.indexOf(y);
+    const t = typeOrder.includes(d.type) ? d.type : 'Unknown';
+    yearStacks[t][idx]++;
+  });
+
+  destroyChart('year');
+  charts.year = new Chart(document.getElementById('chart-year'), {
+    type: 'bar',
+    data: {
+      labels: years,
+      datasets: typeOrder.map(t => ({
+        label: t,
+        data: yearStacks[t],
+        backgroundColor: TYPE_COLORS[t],
+        borderWidth: 0,
+      })),
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 11 } } },
+        tooltip: { mode: 'index', intersect: false },
+      },
+      scales: {
+        x: { stacked: true, grid: { display: false }, ticks: { font: { size: 10 } } },
+        y: {
+          stacked: true,
+          beginAtZero: true,
+          ticks: { precision: 0, font: { size: 10 } },
+          grid: { color: '#f1f5f9' },
+        },
+      },
+    },
+  });
+
+  // --- Type doughnut ---
+  const typeCounts = typeOrder.map(t => data.filter(d => d.type === t).length);
+  destroyChart('type');
+  charts.type = new Chart(document.getElementById('chart-type'), {
+    type: 'doughnut',
+    data: {
+      labels: typeOrder,
+      datasets: [{
+        data: typeCounts,
+        backgroundColor: typeOrder.map(t => TYPE_COLORS[t]),
+        borderWidth: 2,
+        borderColor: '#fff',
+      }],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      cutout: '60%',
+      plugins: {
+        legend: { position: 'right', labels: { boxWidth: 10, font: { size: 11 } } },
+      },
+    },
+  });
+
+  // --- BE/RE doughnut ---
+  const beCount = data.filter(d => (d.be_re || '').toUpperCase().startsWith('BE')).length;
+  const reCount = data.filter(d => (d.be_re || '').toUpperCase() === 'RE').length;
+  const unclCount = data.length - beCount - reCount;
+  const bereLabels = ['BE - Bank Executed', 'RE - Recipient Executed'];
+  const bereData = [beCount, reCount];
+  const bereColors = ['#002244', '#009FDA'];
+  if (unclCount > 0) {
+    bereLabels.push('Unclassified');
+    bereData.push(unclCount);
+    bereColors.push('#9ca3af');
+  }
+  destroyChart('bere');
+  charts.bere = new Chart(document.getElementById('chart-bere'), {
+    type: 'doughnut',
+    data: {
+      labels: bereLabels,
+      datasets: [{ data: bereData, backgroundColor: bereColors, borderWidth: 2, borderColor: '#fff' }],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      cutout: '60%',
+      plugins: {
+        legend: { position: 'right', labels: { boxWidth: 10, font: { size: 11 } } },
+      },
+    },
+  });
+
+  // --- Top vendors horizontal bar ---
+  const vendorCounts = {};
+  data.forEach(d => {
+    const v = (d.vendor || '').trim();
+    if (!v) return;
+    vendorCounts[v] = (vendorCounts[v] || 0) + 1;
+  });
+  const topVendors = Object.entries(vendorCounts)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 10);
+
+  destroyChart('vendor');
+  charts.vendor = new Chart(document.getElementById('chart-vendor'), {
+    type: 'bar',
+    data: {
+      labels: topVendors.map(v => v[0]),
+      datasets: [{
+        label: 'Procurements',
+        data: topVendors.map(v => v[1]),
+        backgroundColor: '#0071BC',
+        borderRadius: 3,
+      }],
+    },
+    options: {
+      indexAxis: 'y',
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { beginAtZero: true, ticks: { precision: 0, font: { size: 10 } }, grid: { color: '#f1f5f9' } },
+        y: { ticks: { font: { size: 10 } }, grid: { display: false } },
+      },
+    },
+  });
+
+  // --- Cost bracket bar ---
+  const costCounts = COST_BRACKET_ORDER.map(b => data.filter(d => d.cost_bracket === b).length);
+  destroyChart('cost');
+  charts.cost = new Chart(document.getElementById('chart-cost'), {
+    type: 'bar',
+    data: {
+      labels: COST_BRACKET_ORDER.map(b => b === '$500,000 - $1,000,000' ? '$500K - $1M' : b),
+      datasets: [{
+        label: 'Procurements',
+        data: costCounts,
+        backgroundColor: COST_BRACKET_ORDER.map(b =>
+          b === 'Unknown' ? '#cbd5e1' : '#0071BC'
+        ),
+        borderRadius: 3,
+      }],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { ticks: { font: { size: 10 } }, grid: { display: false } },
+        y: { beginAtZero: true, ticks: { precision: 0, font: { size: 10 } }, grid: { color: '#f1f5f9' } },
+      },
+    },
+  });
 }
 
 // ---------------------------------------------------------------------------
@@ -606,6 +1077,9 @@ function switchTab(tabId) {
   if (tabId === 'map' && map) {
     map.resize();
   }
+  if (tabId === 'charts') {
+    renderCharts();
+  }
 }
 
 // ---------------------------------------------------------------------------
@@ -613,17 +1087,14 @@ function switchTab(tabId) {
 // ---------------------------------------------------------------------------
 function bindEvents() {
   // Filter changes
-  ['filter-country', 'filter-type', 'filter-vendor', 'filter-cost', 'filter-year'].forEach(id => {
+  ['filter-country', 'filter-type', 'filter-vendor', 'filter-cost', 'filter-year', 'filter-bere'].forEach(id => {
     document.getElementById(id).addEventListener('change', applyFilters);
   });
-  document.getElementById('filter-search').addEventListener('input', debounce(applyFilters, 200));
-
   // Clear filters
   document.getElementById('btn-clear-filters').addEventListener('click', () => {
-    ['filter-country', 'filter-type', 'filter-vendor', 'filter-cost', 'filter-year'].forEach(id => {
+    ['filter-country', 'filter-type', 'filter-vendor', 'filter-cost', 'filter-year', 'filter-bere'].forEach(id => {
       document.getElementById(id).value = '';
     });
-    document.getElementById('filter-search').value = '';
     applyFilters();
   });
 
@@ -648,11 +1119,6 @@ function bindEvents() {
   document.querySelectorAll('.tab-btn').forEach(btn => {
     btn.addEventListener('click', () => switchTab(btn.dataset.tab));
   });
-}
-
-function debounce(fn, ms) {
-  let timer;
-  return (...args) => { clearTimeout(timer); timer = setTimeout(() => fn(...args), ms); };
 }
 
 // ---------------------------------------------------------------------------

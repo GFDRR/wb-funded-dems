@@ -4,31 +4,34 @@ Interactive dashboard for exploring World Bank-funded Digital Elevation Model (D
 
 ## Overview
 
-The World Bank has funded 90+ DEM procurements across 50+ countries totaling approximately $19.5M (2011-2024). This dashboard provides a public, browsable catalog of that procurement metadata to support transparency and reduce duplicate procurement.
+The World Bank has funded 95+ DEM procurements across 49+ countries (2011-2025). This dashboard provides a public, browsable catalog of the procurement metadata to support transparency, reduce duplicate procurement across projects, and surface trends that inform a future centralized acquisition strategy.
 
 **Live dashboard**: [https://cgiovando.github.io/wb-funded-dems/](https://cgiovando.github.io/wb-funded-dems/)
 
 ## Features
 
-- **Map View** - Interactive MapLibre GL JS map with proportional circles showing procurement counts by country
-- **Table View** - Searchable, sortable table of all procurement records with linked World Bank project codes
-- **Filters** - Filter by country, type (LiDAR/Satellite/Drone), vendor, cost bracket, and year
-- **Summary Statistics** - Key metrics updated dynamically as filters change
+- **Map view** - MapLibre GL JS world map with proportional circles aggregating procurements by country; click a country for the list of datasets.
+- **Charts view** - Procurement trend with linear fit and 15% CAGR projection for 2026-2028, sensor type mix, BE/RE (Bank Executed vs Recipient Executed) split, top vendors, and cost bracket distribution. Every chart updates live with the filters.
+- **Table view** - Sortable table with a colored BE/RE badge, sensor type, cost bracket, and a deep link to the corresponding World Bank project page via PCODE.
+- **Faceted filters** - Country, sensor type, vendor, BE/RE, cost bracket, and year. Each dropdown dynamically narrows to values still reachable given the other selections, so you never land on an impossible combination.
+- **Summary stats strip** - Dataset and country counts, year range, sensor mix, BE/RE split, and availability - all recomputed as filters change.
 
 ## Data
 
-The dashboard displays sanitized metadata from the DEM procurement inventory. Sensitive fields (contact emails, exact costs) are removed or replaced with cost brackets. The ETL script (`scripts/prepare-data.py`) handles this transformation.
+The dashboard displays sanitized metadata from the DEM procurement inventory maintained in the companion `dem-for-resilience` project. The ETL script (`scripts/prepare-data.py`) reads the master CSV, strips sensitive fields, converts exact costs to brackets, normalizes sensor-type labels, adds country centroids, and writes `data/dem-inventory-public.json`.
 
 ### Data sensitivity
 
-- Email addresses are removed entirely
-- Exact costs are replaced with cost brackets
-- Internal notes are stripped
+- Contact emails are removed entirely
+- Exact costs are replaced with cost brackets (< $10K, $10K-$50K, ..., > $1M)
+- Internal notes and status fields are stripped
+- 3 records with no country of record are dropped
 
 ## Tech stack
 
 - Static site - no build step, single `index.html`
-- [MapLibre GL JS](https://maplibre.org/) - interactive map
+- [MapLibre GL JS](https://maplibre.org/) - interactive map with Carto Positron basemap
+- [Chart.js](https://www.chartjs.org/) (CDN) - trend, doughnut, and bar charts
 - [Tailwind CSS](https://tailwindcss.com/) (CDN) - styling
 - Vanilla JavaScript - no framework dependencies
 - Python - ETL/data preparation script (run locally)
@@ -59,6 +62,10 @@ python3 -m http.server 8877
 
 This disclosure follows emerging best practices for transparency in AI-assisted software development.
 
+## Funding
+
+Funded by the **Japan-GFDRR Trust Fund (Phase 2)**, with support from the Japan-World Bank DRM Hub.
+
 ## License
 
-This project is part of the GFDRR/World Bank "DEM for Resilience" initiative.
+This project is part of the GFDRR/World Bank "DEM for Resilience" project.

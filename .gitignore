@@ -3,6 +3,8 @@ __pycache__/
 *.pyc
 .env
 
+.timesheet-log.md
+
 # Internal project management (not for public repo)
 AGENTS.md
 CLAUDE.md
