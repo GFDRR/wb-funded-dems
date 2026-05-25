@@ -4,7 +4,7 @@ Interactive dashboard for exploring World Bank-funded Digital Elevation Model (D
 
 ## Overview
 
-The World Bank has funded 95+ DEM procurements across 49+ countries (2011-2025). This dashboard provides a public, browsable catalog of the procurement metadata to support transparency, reduce duplicate procurement across projects, and surface trends that inform a future centralized acquisition strategy.
+The World Bank has funded 130+ DEM procurements across 65+ countries (2008-2025). This dashboard provides a public, browsable catalog of the procurement metadata to support transparency, reduce duplicate procurement across projects, and surface trends that inform a future centralized acquisition strategy.
 
 **Live dashboard**: [https://cgiovando.github.io/wb-funded-dems/](https://cgiovando.github.io/wb-funded-dems/)
 
@@ -18,7 +18,7 @@ The World Bank has funded 95+ DEM procurements across 49+ countries (2011-2025).
 
 ## Data
 
-The dashboard displays sanitized metadata from the DEM procurement inventory maintained in the companion `dem-for-resilience` project. The ETL script (`scripts/prepare-data.py`) reads the master CSV, strips sensitive fields, converts exact costs to brackets, normalizes sensor-type labels, adds country centroids, and writes `data/dem-inventory-public.json`.
+The dashboard displays sanitized metadata from the canonical DEM procurement inventory maintained in the private `GFDRR/dem-for-resilience` repository (`repo/data/dem-inventory-expanded.csv` - the single source of truth). The ETL script (`scripts/prepare-data.py`) reads the canonical CSV, strips sensitive fields, converts exact costs to brackets, normalizes sensor-type labels and years, adds country centroids, and writes `data/dem-inventory-public.json`.
 
 ### Data sensitivity
 

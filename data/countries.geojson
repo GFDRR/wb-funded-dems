@@ -4,6 +4,23 @@
     {
       "type": "Feature",
       "properties": {
+        "iso3": "AFG",
+        "country": "Afghanistan",
+        "count": 1,
+        "total_cost": 0,
+        "cost_bracket": "Unknown"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          67.71,
+          33.94
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
         "iso3": "AGO",
         "country": "Angola",
         "count": 1,
@@ -15,6 +32,23 @@
         "coordinates": [
           17.87,
           -12.29
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "iso3": "ALB",
+        "country": "Albania",
+        "count": 1,
+        "total_cost": 0,
+        "cost_bracket": "Unknown"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          20.17,
+          41.15
         ]
       }
     },
@@ -38,9 +72,60 @@
     {
       "type": "Feature",
       "properties": {
+        "iso3": "BGD",
+        "country": "Bangladesh",
+        "count": 2,
+        "total_cost": 523764.0,
+        "cost_bracket": "$500,000 - $1,000,000"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          90.36,
+          23.68
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "iso3": "BGR",
+        "country": "Bulgaria",
+        "count": 1,
+        "total_cost": 0,
+        "cost_bracket": "Unknown"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          25.49,
+          42.73
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "iso3": "BIH",
+        "country": "Bosnia and Herzegovina",
+        "count": 1,
+        "total_cost": 0,
+        "cost_bracket": "Unknown"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          17.68,
+          43.92
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
         "iso3": "BLZ",
         "country": "Belize",
-        "count": 1,
+        "count": 2,
         "total_cost": 578858.0,
         "cost_bracket": "$500,000 - $1,000,000"
       },
@@ -157,6 +242,23 @@
     {
       "type": "Feature",
       "properties": {
+        "iso3": "ETH",
+        "country": "Ethiopia",
+        "count": 1,
+        "total_cost": 0,
+        "cost_bracket": "Unknown"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          40.49,
+          9.15
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
         "iso3": "FJI",
         "country": "Fiji",
         "count": 1,
@@ -202,6 +304,23 @@
         "coordinates": [
           -1.02,
           7.95
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "iso3": "GIN",
+        "country": "The Republic of Guinea, The Republic of The Gambia, The Republic of Guinea Bissau, The Republic of Senegal",
+        "count": 1,
+        "total_cost": 0,
+        "cost_bracket": "Unknown"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -9.7,
+          9.95
         ]
       }
     },
@@ -259,6 +378,23 @@
     {
       "type": "Feature",
       "properties": {
+        "iso3": "HND",
+        "country": "Honduras",
+        "count": 1,
+        "total_cost": 0,
+        "cost_bracket": "Unknown"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -86.24,
+          15.2
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
         "iso3": "HTI",
         "country": "Haiti",
         "count": 1,
@@ -278,7 +414,7 @@
       "properties": {
         "iso3": "IDN",
         "country": "Indonesia",
-        "count": 1,
+        "count": 5,
         "total_cost": 3646.0,
         "cost_bracket": "< $10,000"
       },
@@ -295,7 +431,7 @@
       "properties": {
         "iso3": "IND",
         "country": "India",
-        "count": 4,
+        "count": 8,
         "total_cost": 114401.0,
         "cost_bracket": "$100,000 - $500,000"
       },
@@ -346,7 +482,7 @@
       "properties": {
         "iso3": "KHM",
         "country": "Cambodia",
-        "count": 1,
+        "count": 2,
         "total_cost": 15000.0,
         "cost_bracket": "$10,000 - $50,000"
       },
@@ -380,7 +516,7 @@
       "properties": {
         "iso3": "LBR",
         "country": "Liberia",
-        "count": 2,
+        "count": 3,
         "total_cost": 0,
         "cost_bracket": "Unknown"
       },
@@ -406,6 +542,40 @@
         "coordinates": [
           -60.98,
           13.91
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "iso3": "LKA",
+        "country": "Sri Lanka",
+        "count": 3,
+        "total_cost": 0,
+        "cost_bracket": "Unknown"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.77,
+          7.87
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "iso3": "MAR",
+        "country": "Morocco",
+        "count": 1,
+        "total_cost": 0,
+        "cost_bracket": "Unknown"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -7.09,
+          31.79
         ]
       }
     },
@@ -499,7 +669,7 @@
       "properties": {
         "iso3": "MOZ",
         "country": "Mozambique",
-        "count": 6,
+        "count": 7,
         "total_cost": 9339012.35,
         "cost_bracket": "> $1,000,000"
       },
@@ -548,6 +718,23 @@
     {
       "type": "Feature",
       "properties": {
+        "iso3": "NGA",
+        "country": "Nigeria",
+        "count": 1,
+        "total_cost": 0,
+        "cost_bracket": "Unknown"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          8.68,
+          9.08
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
         "iso3": "NPL",
         "country": "Nepal",
         "count": 2,
@@ -559,6 +746,23 @@
         "coordinates": [
           84.12,
           28.39
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "iso3": "POL",
+        "country": "Poland",
+        "count": 1,
+        "total_cost": 0,
+        "cost_bracket": "Unknown"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          19.13,
+          51.92
         ]
       }
     },
@@ -584,7 +788,7 @@
       "properties": {
         "iso3": "RWA",
         "country": "Rwanda",
-        "count": 2,
+        "count": 3,
         "total_cost": 1925442.6,
         "cost_bracket": "> $1,000,000"
       },
@@ -601,7 +805,7 @@
       "properties": {
         "iso3": "SEN",
         "country": "Senegal",
-        "count": 1,
+        "count": 2,
         "total_cost": 0,
         "cost_bracket": "Unknown"
       },
@@ -644,6 +848,23 @@
         "coordinates": [
           -88.9,
           13.79
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "iso3": "SRB",
+        "country": "Serbia",
+        "count": 1,
+        "total_cost": 0,
+        "cost_bracket": "Unknown"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          21.01,
+          44.02
         ]
       }
     },
@@ -701,6 +922,23 @@
     {
       "type": "Feature",
       "properties": {
+        "iso3": "TCD",
+        "country": "Chad",
+        "count": 1,
+        "total_cost": 0,
+        "cost_bracket": "Unknown"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          18.73,
+          15.45
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
         "iso3": "TGO",
         "country": "Togo",
         "count": 1,
@@ -712,6 +950,23 @@
         "coordinates": [
           1.17,
           8.62
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "iso3": "TJK",
+        "country": "Tajikistan",
+        "count": 1,
+        "total_cost": 0,
+        "cost_bracket": "Unknown"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          71.28,
+          38.86
         ]
       }
     },
@@ -737,7 +992,7 @@
       "properties": {
         "iso3": "TZA",
         "country": "Tanzania",
-        "count": 5,
+        "count": 6,
         "total_cost": 150444.0,
         "cost_bracket": "$100,000 - $500,000"
       },
@@ -771,7 +1026,7 @@
       "properties": {
         "iso3": "VNM",
         "country": "Vietnam",
-        "count": 2,
+        "count": 3,
         "total_cost": 12084.0,
         "cost_bracket": "$10,000 - $50,000"
       },
@@ -805,7 +1060,7 @@
       "properties": {
         "iso3": "WSM",
         "country": "Samoa",
-        "count": 1,
+        "count": 2,
         "total_cost": 1400000.0,
         "cost_bracket": "> $1,000,000"
       },

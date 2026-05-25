@@ -20,7 +20,7 @@ import sys
 
 MASTER_CSV = os.path.join(
     os.path.dirname(__file__),
-    "../../dem-for-resilience/data/dem-inventory-master.csv",
+    "../../dem-for-resilience/repo/data/dem-inventory-expanded.csv",
 )
 OUT_DIR = os.path.join(os.path.dirname(__file__), "../data")
 OUT_JSON = os.path.join(OUT_DIR, "dem-inventory-public.json")
@@ -49,8 +49,13 @@ ISO3_FIXES = {
 # ---------------------------------------------------------------------------
 
 COUNTRY_CENTROIDS = {
+    "AFG": [33.94, 67.71],
     "AGO": [-12.29, 17.87],
+    "ALB": [41.15, 20.17],
     "BFA": [12.36, -1.52],
+    "BGD": [23.68, 90.36],
+    "BGR": [42.73, 25.49],
+    "BIH": [43.92, 17.68],
     "BLZ": [17.19, -88.50],
     "BTN": [27.47, 90.43],
     "CAF": [6.61, 20.94],
@@ -58,12 +63,16 @@ COUNTRY_CENTROIDS = {
     "COD": [-2.88, 23.66],
     "DMA": [15.41, -61.37],
     "EGY": [26.82, 30.80],
+    "ETH": [9.15, 40.49],
     "FJI": [-17.71, 178.07],
     "GAB": [-0.80, 11.61],
     "GHA": [7.95, -1.02],
+    "GIN": [9.95, -9.70],
     "GMB": [13.44, -15.31],
+    "GNB": [11.80, -15.18],
     "GRD": [12.12, -61.68],
     "GUY": [4.86, -58.93],
+    "HND": [15.20, -86.24],
     "HTI": [19.07, -72.12],
     "IDN": [-0.79, 113.92],
     "IND": [20.59, 78.96],
@@ -73,6 +82,8 @@ COUNTRY_CENTROIDS = {
     "LAO": [19.86, 102.50],
     "LBR": [6.43, -9.43],
     "LCA": [13.91, -60.98],
+    "LKA": [7.87, 80.77],
+    "MAR": [31.79, -7.09],
     "MDG": [-18.77, 46.87],
     "MHL": [7.13, 171.18],
     "MLI": [17.57, -4.00],
@@ -81,16 +92,21 @@ COUNTRY_CENTROIDS = {
     "MOZ": [-18.67, 35.53],
     "MWI": [-13.25, 34.30],
     "NER": [17.61, 8.08],
+    "NGA": [9.08, 8.68],
     "NPL": [28.39, 84.12],
+    "POL": [51.92, 19.13],
     "ROU": [45.94, 24.97],
     "RWA": [-1.94, 29.87],
     "SEN": [14.50, -14.45],
     "SLE": [8.46, -11.78],
     "SLV": [13.79, -88.90],
+    "SRB": [44.02, 21.01],
     "STP": [0.19, 6.61],
     "SXM": [18.04, -63.05],
     "SYC": [-4.68, 55.49],
+    "TCD": [15.45, 18.73],
     "TGO": [8.62, 1.17],
+    "TJK": [38.86, 71.28],
     "TON": [-21.18, -175.20],
     "TZA": [-6.37, 34.89],
     "UGA": [1.37, 32.29],
@@ -107,12 +123,18 @@ COUNTRY_CENTROIDS = {
 TYPE_MAP = {
     "Satellite": "Satellite",
     "Satellite - Optical": "Satellite",
+    "Satellite - Free": "Satellite",
     "Drone": "Drone",
     "Drone - Optical": "Drone",
     "Drone - Lidar": "LiDAR",
+    "Drone - LiDAR": "LiDAR",
     "Aircraft - Lidar": "LiDAR",
+    "Aircraft - LiDAR": "LiDAR",
+    "Aircraft - Optical": "LiDAR",
     "Helicopter - LiDAR": "LiDAR",
+    "TBD": "Unknown",
     "???": "Unknown",
+    "Unknown": "Unknown",
     "": "Unknown",
 }
 
@@ -165,8 +187,10 @@ def main():
 
         rec = {}
 
-        # Fix ISO3
+        # Fix ISO3 (use first code for multi-country entries like "BLZ,GRD,LCA")
         iso3 = row.get("Country ISO3", "").strip()
+        if "," in iso3:
+            iso3 = iso3.split(",")[0].strip()
         iso3 = ISO3_FIXES.get(iso3, iso3)
 
         # Clean up "???" dataset names
@@ -191,7 +215,10 @@ def main():
 
         # Core fields
         rec["name"] = raw_name
-        rec["year"] = row.get("Year", "").strip()
+        # Normalize year: extract first 4-digit year (handles "2010-2014", "2018-2020 (estimated)")
+        raw_year = row.get("Year", "").strip()
+        year_match = re.search(r"\d{4}", raw_year)
+        rec["year"] = year_match.group(0) if year_match else raw_year
         rec["vendor"] = row.get("Vendor", "").strip()
         rec["product"] = row.get("Product", "").strip()
         rec["type"] = TYPE_MAP.get(row.get("Type", "").strip(), "Unknown")
