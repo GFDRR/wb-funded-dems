@@ -232,6 +232,13 @@
           class="text-xs text-gray-500 hover:text-red-600 underline hidden shrink-0">
           Clear
         </button>
+
+        <button id="btn-copy-link"
+          class="ml-auto inline-flex items-center gap-1 text-xs text-gray-500 hover:text-wb-accent shrink-0"
+          title="Copy a shareable link with the current view and filters">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+          <span>Copy link</span>
+        </button>
       </div>
     </div>
 
@@ -343,6 +350,15 @@
     <p class="mt-2 text-gray-400">
       Funded by the <strong>Japan-GFDRR Trust Fund (Phase 2)</strong>, with support from the Japan-World Bank DRM Hub.
     </p>
+    <p class="mt-3">
+      <a href="https://github.com/GFDRR/wb-funded-dems" target="_blank" rel="noopener"
+         class="inline-flex items-center gap-1.5 text-gray-500 hover:text-wb-accent hover:underline">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+          <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/>
+        </svg>
+        View source on GitHub
+      </a>
+    </p>
   </footer>
 
 <script>
@@ -355,6 +371,7 @@ let countriesGeo = null;
 let map = null;
 let sortKey = null;
 let sortAsc = true;
+let activeTab = 'map';
 
 const TYPE_COLORS = {
   LiDAR:     '#2563eb',
@@ -374,9 +391,12 @@ async function init() {
   allData = await dataRes.json();
   countriesGeo = await geoRes.json();
 
+  // Restore view + filters from the URL (shareable links) before first render.
+  activeTab = readStateFromUrl();
   applyFilters();
   initMap();
   bindEvents();
+  switchTab(activeTab);
 }
 
 // ---------------------------------------------------------------------------
@@ -393,6 +413,50 @@ function currentFilterValues() {
     cost:    document.getElementById('filter-cost').value,
     year:    document.getElementById('filter-year').value,
   };
+}
+
+// --- URL state sync (shareable view + filter links) ---
+// Mirrors the active tab and all six filters into the query string via
+// replaceState (no history spam), and restores them on load.
+function writeStateToUrl() {
+  const f = currentFilterValues();
+  const params = new URLSearchParams();
+  if (activeTab && activeTab !== 'map') params.set('view', activeTab);
+  if (f.country) params.set('country', f.country);
+  if (f.type)    params.set('type', f.type);
+  if (f.vendor)  params.set('vendor', f.vendor);
+  if (f.bere)    params.set('bere', f.bere);
+  if (f.cost)    params.set('cost', f.cost);
+  if (f.year)    params.set('year', f.year);
+  const qs = params.toString();
+  history.replaceState(null, '', qs ? `${location.pathname}?${qs}` : location.pathname);
+}
+
+function setSelectValue(id, value) {
+  if (!value) return;
+  const sel = document.getElementById(id);
+  sel.value = value;
+  // Dynamic selects (country/vendor/year) aren't populated yet on load;
+  // inject the option so the value sticks until applyFilters rebuilds them.
+  if (sel.value !== value) {
+    const opt = document.createElement('option');
+    opt.value = value;
+    opt.textContent = value;
+    sel.appendChild(opt);
+    sel.value = value;
+  }
+}
+
+function readStateFromUrl() {
+  const params = new URLSearchParams(location.search);
+  setSelectValue('filter-country', params.get('country'));
+  setSelectValue('filter-type',    params.get('type'));
+  setSelectValue('filter-vendor',  params.get('vendor'));
+  setSelectValue('filter-bere',    params.get('bere'));
+  setSelectValue('filter-cost',    params.get('cost'));
+  setSelectValue('filter-year',    params.get('year'));
+  const view = params.get('view');
+  return (view === 'charts' || view === 'table') ? view : 'map';
 }
 
 function matchesFilters(d, f) {
@@ -498,6 +562,7 @@ function applyFilters() {
   renderTable();
   renderCharts();
   updateMapMarkers();
+  writeStateToUrl();
 }
 
 // ---------------------------------------------------------------------------
@@ -1067,6 +1132,7 @@ function filterByCountry(country) {
 // Tabs
 // ---------------------------------------------------------------------------
 function switchTab(tabId) {
+  activeTab = tabId;
   document.querySelectorAll('.tab-btn').forEach(btn => {
     btn.classList.toggle('active', btn.dataset.tab === tabId);
     btn.classList.toggle('text-gray-500', btn.dataset.tab !== tabId);
@@ -1080,6 +1146,7 @@ function switchTab(tabId) {
   if (tabId === 'charts') {
     renderCharts();
   }
+  writeStateToUrl();
 }
 
 // ---------------------------------------------------------------------------
@@ -1118,6 +1185,30 @@ function bindEvents() {
   // Tabs
   document.querySelectorAll('.tab-btn').forEach(btn => {
     btn.addEventListener('click', () => switchTab(btn.dataset.tab));
+  });
+
+  // Copy shareable link (current view + filters are already in the URL)
+  const copyBtn = document.getElementById('btn-copy-link');
+  copyBtn.addEventListener('click', async () => {
+    const label = copyBtn.querySelector('span');
+    try {
+      await navigator.clipboard.writeText(location.href);
+    } catch {
+      // Clipboard API blocked (e.g. non-secure context); fall back to select-and-copy.
+      const tmp = document.createElement('input');
+      tmp.value = location.href;
+      document.body.appendChild(tmp);
+      tmp.select();
+      try { document.execCommand('copy'); } catch {}
+      document.body.removeChild(tmp);
+    }
+    const orig = label.textContent;
+    label.textContent = 'Copied!';
+    copyBtn.classList.add('text-wb-accent');
+    setTimeout(() => {
+      label.textContent = orig;
+      copyBtn.classList.remove('text-wb-accent');
+    }, 1500);
   });
 }
 
