@@ -6,7 +6,7 @@ Interactive dashboard for exploring World Bank-funded Digital Elevation Model (D
 
 The World Bank has funded 130+ DEM procurements across 65+ countries (2008-2025). This dashboard provides a public, browsable catalog of the procurement metadata to support transparency, reduce duplicate procurement across projects, and surface trends that inform a future centralized acquisition strategy.
 
-**Live dashboard**: [https://cgiovando.github.io/wb-funded-dems/](https://cgiovando.github.io/wb-funded-dems/)
+**Live dashboard**: [https://gfdrr.github.io/wb-funded-dems/](https://gfdrr.github.io/wb-funded-dems/)
 
 ## Features
 
